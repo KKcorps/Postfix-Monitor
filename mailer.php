@@ -1,0 +1,205 @@
+<?php
+require 'php_mailer/PHPMailerAutoload.php';
+$start = microtime(true);
+$con = mysql_connect("localhost", "root", "test2014!!");
+$f = mysql_select_db("mailer", $con);
+$res = mysql_query("SELECT * FROM mailid");
+//echo $q;
+//while($row = mysql_fetch_assoc($res))
+//{
+//echo $row['id']."/".$row['email'];
+//}
+//echo $_POST['subject']."<br/>".$_POST['message'].$_POST['num'];
+if(isset($_POST['submit']))
+{
+$to = $_POST['to'];
+$mails = explode(',',$to);
+//echo $mails;
+    $mailltoadm = new PHPMailer;
+    $mailltoadm->isSMTP();     
+    $mailltoadm->Host = 'smtp.gmail.com'; 
+    $mail->Port = 587;
+    $mailltoadm->SMTPAuth = true;     
+    $mailltoadm->Username = 'namit.octane@gmail.com';  
+    $mailltoadm->Password = 'intern@octane';  
+    $mailltoadm->SMTPSecure = 'tls'; 
+    $mailltoadm->From = "manojbajaj95@gmail.com"; 
+    $mailltoadm->FromName = "Manoj Bajaj";
+    //$mailltoadm->addAddress($mastermail, $name_store);
+   // $mailltoadm->addAddress("kartik.octane@gmail.com");  
+    //$mailltoadm->addAddress("namit.ohri@gmail.com");  
+    $mailltoadm->addReplyTo("manojbajaj95@gmail.com", "Kartik Khare");
+    $mailltoadm->WordWrap = 50;
+    $mailltoadm->isHTML(true);  
+    $mailltoadm->Subject = 'Test';
+    $mailltoadm->Body = $_POST['message'];
+    //$mailltoadm->AltBody = convert_html_to_text($finishorder);
+    
+foreach($mails as $mail){
+        //echo $mail;  
+        for($i = 0; $i<$_POST['num']; $i++)
+	{
+	//$subject = $_POST['subject'];
+	//$message = $_POST['message'];
+	//$headers = 'From: '.$_POST['from_addr']. "\r\n"; 
+	//$f = mail($mail, $subject, $message, $headers);
+	//if($f) echo "Mail sent successfully<br/>";
+       $mailltoadm->addAddress($mail); 
+       if(!$mailltoadm->send()) 
+       {
+        echo 'Mailer to admin Error: ' . $mailltoadm->ErrorInfo;
+       } 
+       else 
+       {
+        echo 'Message to admin has been sent';
+        }
+    }
+    }
+}
+?>
+<html>
+<head>
+<title>Postfix Mailer</title>
+<link rel="stylesheet" href="//netdna.bootstrapcdn.com/bootstrap/3.1.1/css/bootstrap.min.css">
+<link href='http://fonts.googleapis.com/css?family=Quicksand' rel='stylesheet' type='text/css'>
+</head>
+<body>
+<style>
+h1
+{
+font-family: 'Quicksand', sans-serif !important;
+font-size: 72px;
+background-color: rgb(134,223,45);
+color: #fff;
+margin-top: 0px;
+margin-bottom: 0px;
+text-align: center;
+}
+
+.form-control
+{
+width: 75%
+}
+form
+{
+margin-left:10px;
+width: 49%;
+}
+.navbar-brand
+{
+ margin-right: 10px;
+}
+
+.navbar-brand:hover:not(selected)
+{
+color: #000 !important;
+background-color: #bbb !important;
+border-radius: 2px !important;
+}
+.selected
+{
+ color:#000 !important;
+ background-color: #ddd !important;
+ border-radius: 2px !important;
+}
+</style>
+<h1>Postfix Mailer</h1>
+<nav class="navbar navbar-default" role="navigation">
+  <div class="container-fluid">
+    <!-- Brand and toggle get grouped for better mobile display -->
+    <div class="navbar-header">
+      <a class="navbar-brand" href="padmin.php">Monitor</a>
+      <a class="navbar-brand"  href="pqueue.php" >Queue</a>
+      <a class="navbar-brand" href="plogs.php">Logs</a>
+      <a class="navbar-brand selected">Test Mail</a
+    </div>
+</div>
+</nav>
+<form role="form" action="mailer.php" method="post" style="float:left;">
+<!--<label>From</label>
+<select name="from_addr" class="form-control">
+<?php
+/*while($row = mysql_fetch_assoc($res))
+{
+ echo "<option value=".$row['email'].">".$row['email']."</option>";
+}*/
+?>
+</select>-->
+<div class="form-group">
+<label>From:</label>
+<br/>
+<input type="text" name="from_addr" class="form-control"></input><br/>
+</div>
+<br/>
+<div class="form-group">
+<label>To:</label>
+
+<br/>
+<input type="text" name="to" class="form-control"></input><br/>
+</div>
+<div class="form-group">
+<label>Subject:</label>
+
+<br/>
+<input type="text" name="subject" class="form-control"></input><br/>
+</div>
+<div class="form-group">
+<label>Message:</label>
+<br/>
+<textarea name="message" class="form-control" rows="3"></textarea><br/>
+</div>
+<label>Message count</label>
+<br/>
+<select class="form-control" name="num">
+<?php
+for($j = 1;$j<=10000;$j++)
+{
+echo "<option value=".$j.">".$j."</option>";
+}
+?>
+</select>
+<br/>
+<br/>
+<button type="submit" value="submit" name="submit" class="btn btn-success">Submit</button>
+</form>
+<form role="form" action="imap_check.php" method="post" style="float:right;">
+    <div class="form-group">
+    <label>Username</label>
+    <input type="text" name="user" class="form-control"></input><br/>
+    </div>
+    <br/>
+    <div class="form-group">
+    <label>Password</label>
+    <input type="password" name="pass" class="form-control"></input><br/>
+    </div>
+<br/>
+    <button type="submit" value="login" name="login" class="btn btn-success">Login</button>
+</form>
+<form role="form" action="rules.php" method="post" style="float:right;">
+    <div class="form-group">
+    <label>Client-IP</label>
+    <input type="text" name="client" class="form-control"></input><br/>
+    </div>
+    <br/>
+    <div class="form-group">
+    <label>IP list</label>
+    <input type="text" name="list" class="form-control" title="IP in the form 1.1.1.1/6"></input><br/>
+    </div>
+<br/>
+    <button type="submit" value="tables" name="tables" class="btn btn-warning">Insert</button>
+</form></body>
+</html>
+<?php
+if(isset($start)){
+echo microtime(true)-$start."<br/>";
+}
+?>
+
+
+
+
+
+
+
+
+

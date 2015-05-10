@@ -1,0 +1,140 @@
+<html>
+<head>
+<script type="text/javascript" src="http://code.jquery.com/jquery-2.1.1.min.js"></script>
+<link rel="stylesheet" href="//netdna.bootstrapcdn.com/bootstrap/3.1.1/css/bootstrap.min.css">
+<link href='http://fonts.googleapis.com/css?family=Quicksand' rel='stylesheet' type='text/css'>
+<style type="text/css">
+.detail
+{
+ text-align: center;
+ font-family: 'Quicksand', sans-serif;
+}
+.table
+{
+width: 49%;
+}
+.body
+{
+margin-left: 20px;
+}
+h1
+{
+font-family: 'Quicksand', sans-serif !important;
+font-size: 72px;
+background-color: rgb(134,223,45);
+color: #fff;
+margin-top: 0px;
+margin-bottom: 0px;
+text-align: center;
+}
+.navbar-brand
+{
+ margin-right: 10px;
+}
+.navbar-brand:hover:not(selected)
+{
+color: #000 !important;
+background-color: #bbb !important;
+border-radius: 2px !important;
+}
+.selected
+{
+ color:#000 !important;
+ background-color: #ddd !important;
+ border-radius: 2px !important;
+}
+</style>
+</head>
+<body>
+<h1>Postfix Monitor</h1>
+<nav class="navbar navbar-default" role="navigation">
+  <div class="container-fluid">
+    <div class="navbar-header">
+      <a class="navbar-brand selected">Monitor</a>
+      <a class="navbar-brand" href="pqueue.php">Queue</a>
+      <a class="navbar-brand" href="plogs.php">Logs</a>
+      <a class="navbar-brand" href="mailer.php">Test Mail</a>
+    </div>
+</div>
+</nav>
+<div id="arrcall">
+</div>
+<div style="float:right;width:49%;margin-top:-1%;">
+<h2>Active Connections</h2>
+<table class="table" style="width:100%;">
+<tr>
+<th>Connection</th><th>Active</th>
+</tr>
+<tr>
+<td>SMTP</td>
+<td id="activecon"></td>
+</tr>
+</table>
+</div>
+<!--<button id="clk">Test</button>-->
+<h2>Traffic Totals</h2>
+<table class="table">
+	<tr>
+		<th>Type</th><th>Incoming</th><th>Outgoing</th>
+	</tr>
+	<tr>
+		<td>Total</td><td id="total_in"></td><td id="total_out"></td>
+	</tr>
+        <tr>
+		<td>top/hour</td><td id="maxin"></td><td id="maxout"></td>
+	</tr>
+</table>
+<!--<table class="table" style="float:right;">
+<tr>
+<th>Connection</th><th>Active</th>
+</tr>
+<tr>
+<td>SMTP</td>
+<td id="activecon"></td>-->
+<h2> Per Hour Summary </h2>
+<table id="per_hour" class="table table-hover">
+</table>
+<script>
+//for(var i =0; i<100; i++){
+//var i = 0;
+$(document).ready(
+setInterval(function(){
+//$("#arrcall").append("<p>success</p>");
+//});
+//$("#clk").click(function(){
+/*	$.ajax({
+        url: "test_view.php",
+        type: "GET",
+        success: function(){
+        $('#arrcall').append("<p>success_new</p>");
+         }
+ });
+*/
+$.get("test_con.php", function(data_1, status_1){
+$('#activecon').html(data_1.length);
+});
+$.get("test_view.php",function(data,status){
+data = $.grep(data, function(n){ return(n) });
+//$('#arrcall').html("<p></p>");
+$('#total_out').html(data[4].split(" ").filter(function(v){return v!==''})[0]);
+$('#total_in').html(data[5].split(" ").filter(function(v){return v!==''})[0]);
+$('#per_hour').html("<tr><th colspan='2'>Time</th><th>Received</th><th>Delivered</th><th>Deferred</th><th>Bounced</th><th>Rejected</th></tr>");
+
+var max_in = 0;
+var max_out = 0;
+for(var i = 23;i<=46;i++){
+var l = data[i].split(" ").filter(function(v){return v!==''});
+if(max_in<l[1]) max_in = l[1];
+if(max_out<l[2]) max_out = l[2]; 
+//$('#arrcall').append("<div class='details'>"+data[i]+"</div><br>");
+$('#per_hour').append("<tr><td class='tme' colspan='2'>"+l[0]+"</td><td>"+l[1]+"</td><td>"+l[2]+"</td><td>"+l[3]+"</td><td>"+l[4]+"</td><td>"+l[5]+"</td></tr>");
+//i++;
+}
+$('#maxin').html(max_in);
+$('#maxout').html(max_out);
+});
+//$("#arrcall").append("<p>success</p>");
+}, 1000));
+
+</script>
+
